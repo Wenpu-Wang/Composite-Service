@@ -11,14 +11,14 @@ def t1():
     lookup = StreetLookup()
     # lookup.input_id = "24601"  # Optional ID from your system
 
-    lookup.street = "520 W. 120th Street"
+    lookup.street = "212 W 91st ST"
     # lookup.street2 = "closet under the stairs"
     #lookup.secondary = "APT 2"
     #lookup.urbanization = ""  # Only applies to Puerto Rico addresses
     lookup.city = "New York"
     lookup.state = "NY"
-    lookup.zipcode = "10027"
-    lookup.candidates = 3
+    lookup.zipcode = "10024"
+    lookup.candidates = 2
     # lookup.match = "invalid"  # "invalid" is the most permissive match,
     # this will always return at least one result even if the address is invalid.
     # Refer to the documentation for additional Match Strategy options.
@@ -57,8 +57,8 @@ def t3():
     sm = SmartyStreetsAdaptor()
 
     q = {
-        "city": "New York",
-        "state": "New York",
+        "city": "Mars",
+        "state": "Sun",
         "street1": "212 w 91st ST"
     }
     res = sm.do_search(q)
@@ -70,4 +70,4 @@ def t3():
 
 #t1()
 #t2()
-t3()
+#t3()
