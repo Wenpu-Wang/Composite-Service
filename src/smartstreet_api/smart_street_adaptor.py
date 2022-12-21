@@ -1,3 +1,4 @@
+from flask import jsonify, request
 from smartystreets_python_sdk import StaticCredentials, exceptions, ClientBuilder
 from smartystreets_python_sdk.us_street import Lookup as StreetLookup
 from smartystreets_python_sdk.us_autocomplete_pro import Lookup as AutocompleteProLookup, geolocation_type
@@ -65,9 +66,18 @@ class SmartyStreetsAdaptor:
         self.candidates = lookup.result
         self._set_dictionary()
 
-    def do_suggestion(self, input_field):
-        lookup = AutocompleteProLookup(input_field)
+    def do_autocomplete(self, address_field):
+        client = ClientBuilder(self.credentials).with_licenses(["us-autocomplete-pro-cloud"]).build_us_autocomplete_pro_api_client()
+        lookup = AutocompleteProLookup(address_field)
+        lookup.max_results = 5
+        lookup.prefer_ratio = 33
+        lookup.source = 'all'
 
+        client.send(lookup)
+
+
+
+        return lookup.result
 
 
     def do_search(self, address_fields):

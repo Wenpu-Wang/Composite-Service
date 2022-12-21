@@ -67,7 +67,13 @@ def t3():
     if res >= 1:
         print(json.dumps(sm.to_json(), indent=2, default=str))
 
+def t4():
+    sm = SmartyStreetsAdaptor()
+    address = '212 W'
+    res = sm.do_autocomplete(address)
+    print("t4 result = ", res)
 
 #t1()
 #t2()
 #t3()
+t4()
