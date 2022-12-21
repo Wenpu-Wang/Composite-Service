@@ -68,9 +68,8 @@ def verify_address():
         "zipcode": request.args.get("zipcode")
     }
     sm = SmartyStreetsAdaptor()
-    res = sm.do_search(addr_dict)
+    sm.do_search(addr_dict)
     di = sm.to_json()
-    # print(di)
     li = list()
     if di:
         for _, v in di.items():
@@ -80,12 +79,11 @@ def verify_address():
                        "verified": getattr(v["analysis"], 'dpv_match_code')
                        })
         result = li[0]
-        print("result", result)
 
         verified = result["verified"]
         if verified == "Y":
-            # TODO: save address
-            print("address saved")
+            print("result:", result)
+            return jsonify(result)
         elif verified == "D":
             return Response(json.dumps({"message": "street2 missing"}), status=404, content_type="application/json")
         elif verified == "N":
