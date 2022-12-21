@@ -3,6 +3,7 @@ smarty_info = {
     "auth_token": "nj3FpNBRQ3irKZAbr6w4"
 }
 
+
 def get_context(method):
     if method == "SMARTY":
         return smarty_info

@@ -3,19 +3,16 @@ from smartystreets_python_sdk import StaticCredentials, exceptions, ClientBuilde
 from smartystreets_python_sdk.us_street import Lookup as StreetLookup
 from smartystreets_python_sdk.us_autocomplete_pro import Lookup as AutocompleteProLookup, geolocation_type
 
-#import middleware.context as context
-import context as context
+# import middleware.context as context
+from smartstreet_api import context
 
-'''
-    candidate_fields = [
-        'city_name', 'default_city_name', 'delivery_point', 'delivery_point_check_digit', 'extra_secondary_designator',
-        'extra_secondary_number', 'plus4_code', 'pmb_designator', 'pmb_number', 'primary_number', 'secondary_designator',
-        'secondary_number', 'state_abbreviation', 'street_name', 'street_postdirection', 'street_predirection',
-        'street_suffix', 'urbanization', 'zipcode'
-        ]
-'''
+'''candidate_fields = [ 'city_name', 'default_city_name', 'delivery_point', 'delivery_point_check_digit', 
+'extra_secondary_designator', 'extra_secondary_number', 'plus4_code', 'pmb_designator', 'pmb_number', 
+'primary_number', 'secondary_designator', 'secondary_number', 'state_abbreviation', 'street_name', 
+'street_postdirection', 'street_predirection', 'street_suffix', 'urbanization', 'zipcode' ] '''
+
+
 class SmartyStreetsAdaptor:
-
     candidate_fields = [
         'city_name', 'default_city_name', 'delivery_point', 'delivery_point_check_digit', 'extra_secondary_designator',
         'extra_secondary_number', 'plus4_code', 'pmb_designator', 'pmb_number', 'primary_number',
@@ -27,7 +24,7 @@ class SmartyStreetsAdaptor:
     base_fields = [
         'delivery_line_1', 'delivery_line_2', 'delivery_point_barcode', 'last_line'
     ]
-    smarty_info = context.get_context(method = "SMARTY")
+    smarty_info = context.get_context(method="SMARTY")
 
     auth_id = smarty_info["auth_id"]
     auth_token = smarty_info["auth_token"]
@@ -67,7 +64,8 @@ class SmartyStreetsAdaptor:
         self._set_dictionary()
 
     def do_autocomplete(self, address_field):
-        client = ClientBuilder(self.credentials).with_licenses(["us-autocomplete-pro-cloud"]).build_us_autocomplete_pro_api_client()
+        client = ClientBuilder(self.credentials).with_licenses(
+            ["us-autocomplete-pro-cloud"]).build_us_autocomplete_pro_api_client()
         lookup = AutocompleteProLookup(address_field)
         lookup.max_results = 5
         lookup.prefer_ratio = 33
@@ -75,10 +73,7 @@ class SmartyStreetsAdaptor:
 
         client.send(lookup)
 
-
-
         return lookup.result
-
 
     def do_search(self, address_fields):
         lookup = StreetLookup()
@@ -94,7 +89,7 @@ class SmartyStreetsAdaptor:
         if self.candidates:
             result = len(self.candidates)
         else:
-            result = None
+            result = 0
 
         return result
 
@@ -108,7 +103,7 @@ class SmartyStreetsAdaptor:
 
         result_all = {}
 
-        for k,c in self.candidates_dictionary.items():
+        for k, c in self.candidates_dictionary.items():
             result = {}
 
             base_fields = dir(c)

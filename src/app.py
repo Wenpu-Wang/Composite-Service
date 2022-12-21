@@ -2,6 +2,7 @@ from flask import Flask, Response, request, jsonify, json, url_for
 from flask_cors import CORS
 from catalog_api import catalog_api
 from params import CATALOG_ENDPOINT, ORDER_ENDPOINT
+from smartstreet_api.smart_street_adaptor import SmartyStreetsAdaptor
 # from requests_futures.sessions import FuturesSession
 import requests
 
@@ -55,6 +56,43 @@ def post_orderline(orderid):
 @app.route("/order/<int:orderid>/orderline/<int:lineid>", methods=["PUT"])
 def put_orderline(orderid):
     pass
+
+
+@app.route("/verifyaddress", methods=["GET"])
+def verify_address():
+    addr_dict = {
+        "city": request.args.get("city"),
+        "state": request.args.get("state"),
+        "street1": request.args.get("street1"),
+        "street2": request.args.get("street2"),
+        "zipcode": request.args.get("zipcode")
+    }
+    sm = SmartyStreetsAdaptor()
+    res = sm.do_search(addr_dict)
+    di = sm.to_json()
+    # print(di)
+    li = list()
+    if di:
+        for _, v in di.items():
+            li.append({"delivery_line_1": v["delivery_line_1"],
+                       "delivery_line_2": v["delivery_line_2"],
+                       "last_line": v["last_line"],
+                       "verified": getattr(v["analysis"], 'dpv_match_code')
+                       })
+        result = li[0]
+        print("result", result)
+
+        verified = result["verified"]
+        if verified == "Y":
+            # TODO: save address
+            print("address saved")
+        elif verified == "D":
+            return Response(json.dumps({"message": "street2 missing"}), status=404, content_type="application/json")
+        elif verified == "N":
+            return Response(json.dumps({"message": "address not valid"}), status=404, content_type="application/json")
+        elif verified == "S":
+            return Response(json.dumps({"message": "street2 not valid"}), status=404, content_type="application/json")
+    return Response(json.dumps({"message": "no address found"}), status=404, content_type="application/json")
 
 
 if __name__ == "__main__":
