@@ -53,9 +53,13 @@ def post_orderline(orderid):
     return Response(json.dumps(r.json()), status=r.status_code, content_type="application/json")
 
 
-@app.route("/order/<int:orderid>/orderline/<int:lineid>", methods=["PUT"])
-def put_orderline(orderid):
-    pass
+# @app.route("/order/<int:orderid>/orderline/<int:lineid>", methods=["PUT"])
+# # can only modify the item amount
+# def put_orderline(orderid, lineid):
+#     data = json.loads(request.data)
+#     if "amount" in data:
+#         new_amount = data["amount"]
+#     pass
 
 
 @app.route("/verifyaddress", methods=["GET"])
@@ -85,12 +89,13 @@ def verify_address():
             print("result:", result)
             return jsonify(result)
         elif verified == "D":
-            return Response(json.dumps({"message": "street2 missing"}), status=404, content_type="application/json")
+            return Response(json.dumps({"message": "street2 missing"}), status=400, content_type="application/json")
         elif verified == "N":
-            return Response(json.dumps({"message": "address not valid"}), status=404, content_type="application/json")
+            return Response(json.dumps({"message": "address not valid"}), status=400, content_type="application/json")
         elif verified == "S":
-            return Response(json.dumps({"message": "street2 not valid"}), status=404, content_type="application/json")
-    return Response(json.dumps({"message": "no address found"}), status=404, content_type="application/json")
+            return Response(json.dumps({"message": "street2 not valid"}), status=400, content_type="application/json")
+    return Response(json.dumps({"message": "no address found"}), status=400, content_type="application/json")
+
 
 @app.route("/autocomplete", methods=["GET"])
 def autocomplete_address():
@@ -111,8 +116,7 @@ def autocomplete_address():
         print("Suggestion: ", res)
         return jsonify(li)
     else:
-        return Response(json.dumps({"message": "no address found"}), status=404, content_type="application/json")
-
+        return Response(json.dumps({"message": "no address found"}), status=400, content_type="application/json")
 
 
 if __name__ == "__main__":
