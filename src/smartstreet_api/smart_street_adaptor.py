@@ -4,6 +4,7 @@ from smartystreets_python_sdk.us_street import Lookup as StreetLookup
 from smartystreets_python_sdk.us_autocomplete_pro import Lookup as AutocompleteProLookup, geolocation_type
 
 # import middleware.context as context
+#import context
 from smartstreet_api import context
 
 '''candidate_fields = [ 'city_name', 'default_city_name', 'delivery_point', 'delivery_point_check_digit', 

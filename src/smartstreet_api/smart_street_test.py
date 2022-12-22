@@ -103,10 +103,26 @@ def t4():
     sm = SmartyStreetsAdaptor()
     address = '212 W'
     res = sm.do_autocomplete(address)
-    print("t4 result = ", res)
+
+    # ['city', 'entries', 'secondary', 'state', 'street_line', 'zipcode']
+    print(dir(res[0]))
+
+    li = []
+    if res:
+        for suggestion in res:
+            li.append({
+                'city': suggestion.city,
+                'entries': suggestion.entries,
+                'secondary': suggestion.secondary,
+                'state': suggestion.state,
+                'street_line': suggestion.street_line,
+                'zipcode': suggestion.zipcode
+            })
+
+    print("t4 result = ", li)
 
 
 # t1()
 # t2()
-t3()
-# t4()
+# t3()
+t4()

@@ -92,6 +92,28 @@ def verify_address():
             return Response(json.dumps({"message": "street2 not valid"}), status=404, content_type="application/json")
     return Response(json.dumps({"message": "no address found"}), status=404, content_type="application/json")
 
+@app.route("/autocomplete", methods=["GET"])
+def autocomplete_address():
+    input_address = request.args.get('address')
+    sm = SmartyStreetsAdaptor()
+    res = sm.do_autocomplete(input_address)
+    li = []
+    if res:
+        for suggestion in res:
+            li.append({
+                'city': suggestion.city,
+                'entries': suggestion.entries,
+                'secondary': suggestion.secondary,
+                'state': suggestion.state,
+                'street_line': suggestion.street_line,
+                'zipcode': suggestion.zipcode
+            })
+        print("Suggestion: ", res)
+        return jsonify(li)
+    else:
+        return Response(json.dumps({"message": "no address found"}), status=404, content_type="application/json")
+
+
 
 if __name__ == "__main__":
     app.debug = True
