@@ -2,25 +2,18 @@ from flask import Flask, Response, request, jsonify, json, url_for
 from flask_cors import CORS
 from catalog_api import catalog_api
 from customer_api import customer_api
-from params import CATALOG_ENDPOINT, ORDER_ENDPOINT
+from params import ORDER_ENDPOINT
 from smartstreet_api.smart_street_adaptor import SmartyStreetsAdaptor
-# from requests_futures.sessions import FuturesSession
 import requests
 
-app = Flask(__name__)
-CORS(app)
+application = Flask(__name__)
+CORS(application)
 
-
-# For order service
-# @app.route("/order", methods=["GET"])
-# def post_order():
-#     data = json.loads(request.data)
-#     pass
 
 trigger_login = {"path": "/order", "method": "POST"}
 
 
-@app.before_request
+@application.before_request
 def before_request():
     if request.path == trigger_login["path"] and request.method == trigger_login["method"]:
         email = json.loads(request.data)["email"]
@@ -30,13 +23,12 @@ def before_request():
             return Response(json.dumps({"message": "User not log in"}), status=404, content_type="application/json")
 
 
-@app.route("/", methods=["GET"])
+@application.route("/", methods=["GET"])
 def index():
-    old_stock = catalog_api.get_stock(item_id=1)
-    return {"old_stock": old_stock}
+    return {"message": "Composite Service for 6156 Another Team"}
 
 
-@app.route("/order", methods=["POST"])
+@application.route("/order", methods=["POST"])
 def post_order():
     data = json.loads(request.data)
     url = ORDER_ENDPOINT + url_for("post_order")
@@ -46,7 +38,7 @@ def post_order():
     return res
 
 
-@app.route("/order/<int:orderid>/orderline", methods=["POST"])
+@application.route("/order/<int:orderid>/orderline", methods=["POST"])
 def post_orderline(orderid):
     data = json.loads(request.data)
     item_id, amount = data["itemid"], data["amount"]
@@ -58,13 +50,13 @@ def post_orderline(orderid):
     price_correct = catalog_api.check_price(item_id, data["price"])
     if not price_correct:
         item_price = catalog_api.get_price(item_id)
-        return Response(json.dumps({"message": f"item price should be {item_price}"}), status=404,
+        return Response(json.dumps({"message": f"item price should be {item_price}"}), status=400,
                         content_type="application/json")
     # check if the item is available for the amount
     available = catalog_api.check_stock_availability(item_id, amount)
     if not available:
         stock = catalog_api.get_stock(item_id)
-        return Response(json.dumps({"message": f"item not available, only {stock} left"}), status=404,
+        return Response(json.dumps({"message": f"item not available, only {stock} left"}), status=400,
                         content_type="application/json")
     # POST the item into orderline
     url = ORDER_ENDPOINT + url_for("post_orderline", orderid=orderid)
@@ -85,7 +77,7 @@ def post_orderline(orderid):
 #     pass
 
 
-@app.route("/verifyaddress", methods=["GET"])
+@application.route("/verifyaddress", methods=["GET"])
 def verify_address():
     addr_dict = {
         "city": request.args.get("city"),
@@ -120,9 +112,11 @@ def verify_address():
     return Response(json.dumps({"message": "no address found"}), status=400, content_type="application/json")
 
 
-@app.route("/autocomplete", methods=["GET"])
+@application.route("/autocomplete", methods=["GET"])
 def autocomplete_address():
-    input_address = request.args.get('address')
+    input_address = request.args.get('address', None)
+    if not input_address:
+        return Response(json.dumps({"message": "please input address"}), status=400, content_type="application/json")
     sm = SmartyStreetsAdaptor()
     res = sm.do_autocomplete(input_address)
     li = []
@@ -143,5 +137,5 @@ def autocomplete_address():
 
 
 if __name__ == "__main__":
-    app.debug = True
-    app.run(host="0.0.0.0", port=5014)
+    application.debug = True
+    application.run(host="0.0.0.0", port=5014)
