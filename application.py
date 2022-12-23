@@ -87,28 +87,29 @@ def verify_address():
         "zipcode": request.args.get("zipcode")
     }
     sm = SmartyStreetsAdaptor()
-    sm.do_search(addr_dict)
-    di = sm.to_json()
-    li = list()
-    if di:
-        for _, v in di.items():
-            li.append({"delivery_line_1": v["delivery_line_1"],
-                       "delivery_line_2": v["delivery_line_2"],
-                       "last_line": v["last_line"],
-                       "verified": getattr(v["analysis"], 'dpv_match_code')
-                       })
-        result = li[0]
+    res_len = sm.do_search(addr_dict)
+    if res_len != 0:
+        di = sm.to_json()
+        li = list()
+        if di:
+            for _, v in di.items():
+                li.append({"delivery_line_1": v["delivery_line_1"],
+                           "delivery_line_2": v["delivery_line_2"],
+                           "last_line": v["last_line"],
+                           "verified": getattr(v["analysis"], 'dpv_match_code')
+                           })
+            result = li[0]
 
-        verified = result["verified"]
-        if verified == "Y":
-            print("result:", result)
-            return jsonify(result)
-        elif verified == "D":
-            return Response(json.dumps({"message": "street2 missing"}), status=400, content_type="application/json")
-        elif verified == "N":
-            return Response(json.dumps({"message": "address not valid"}), status=400, content_type="application/json")
-        elif verified == "S":
-            return Response(json.dumps({"message": "street2 not valid"}), status=400, content_type="application/json")
+            verified = result["verified"]
+            if verified == "Y":
+                print("result:", result)
+                return jsonify(result)
+            elif verified == "D":
+                return Response(json.dumps({"message": "street2 missing"}), status=400, content_type="application/json")
+            elif verified == "N":
+                return Response(json.dumps({"message": "address not valid"}), status=400, content_type="application/json")
+            elif verified == "S":
+                return Response(json.dumps({"message": "street2 not valid"}), status=400, content_type="application/json")
     return Response(json.dumps({"message": "no address found"}), status=400, content_type="application/json")
 
 
