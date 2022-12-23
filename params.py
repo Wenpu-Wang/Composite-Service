@@ -7,7 +7,7 @@
 # COMPOSITE_ENDPOINT = "http://127.0.0.1:5014"
 
 # for aws
-CATALOG_ENDPOINT = "http://44.201.156.65:5011"
+CATALOG_ENDPOINT = "http://ec2-44-203-201-57.compute-1.amazonaws.com:5011"
 CUSTOMER_ENDPOINT = "http://6156customer-env.eba-m4hgj3cy.us-east-1.elasticbeanstalk.com"
 ORDER_ENDPOINT = "http://ordermicroservice-env.eba-p53mr9ym.us-east-1.elasticbeanstalk.com"
 COMPOSITE_ENDPOINT = "http://127.0.0.1:5014"
