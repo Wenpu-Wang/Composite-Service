@@ -1,9 +1,9 @@
 from flask import Flask, Response, request, jsonify, json, url_for
 from flask_cors import CORS
-from catalog_api import catalog_api
-from customer_api import customer_api
+from src.catalog_api import catalog_api
+from src.customer_api import customer_api
 from params import ORDER_ENDPOINT
-from smartstreet_api.smart_street_adaptor import SmartyStreetsAdaptor
+from src.smartstreet_api.smart_street_adaptor import SmartyStreetsAdaptor
 import requests
 
 application = Flask(__name__)
