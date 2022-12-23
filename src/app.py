@@ -22,6 +22,7 @@ CORS(app)
 def before_request():
     email = json.loads(request.data)["email"]
     log_in = customer_api.get_login_info(email)
+    print("log in: ", log_in)
     if not log_in:
         return Response(json.dumps({"message": "User not log in"}), status=404, content_type="application/json")
 
@@ -37,7 +38,9 @@ def post_order():
     data = json.loads(request.data)
     url = ORDER_ENDPOINT + url_for("post_order")
     r = requests.post(url=url, json=data)
-    return Response(json.dumps(r.json()), status=r.status_code, content_type="application/json")
+    print(r)
+    res = Response(json.dumps(r.json()), status=r.status_code, content_type="application/json")
+    return res
 
 @app.route("/order/<int:orderid>/orderline", methods=["POST"])
 def post_orderline(orderid):
