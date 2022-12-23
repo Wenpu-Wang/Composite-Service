@@ -17,14 +17,17 @@ CORS(app)
 #     data = json.loads(request.data)
 #     pass
 
+trigger_login = {"path": "/order", "method": "POST"}
+
 
 @app.before_request
 def before_request():
-    email = json.loads(request.data)["email"]
-    log_in = customer_api.get_login_info(email)
-    print("log in: ", log_in)
-    if not log_in:
-        return Response(json.dumps({"message": "User not log in"}), status=404, content_type="application/json")
+    if request.path == trigger_login["path"] and request.method == trigger_login["method"]:
+        email = json.loads(request.data)["email"]
+        log_in = customer_api.get_login_info(email)
+        print("log in: ", log_in)
+        if not log_in:
+            return Response(json.dumps({"message": "User not log in"}), status=404, content_type="application/json")
 
 
 @app.route("/", methods=["GET"])
@@ -41,6 +44,7 @@ def post_order():
     print(r)
     res = Response(json.dumps(r.json()), status=r.status_code, content_type="application/json")
     return res
+
 
 @app.route("/order/<int:orderid>/orderline", methods=["POST"])
 def post_orderline(orderid):
