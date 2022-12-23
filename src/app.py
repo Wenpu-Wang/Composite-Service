@@ -1,6 +1,7 @@
 from flask import Flask, Response, request, jsonify, json, url_for
 from flask_cors import CORS
 from catalog_api import catalog_api
+from customer_api import customer_api
 from params import CATALOG_ENDPOINT, ORDER_ENDPOINT
 from smartstreet_api.smart_street_adaptor import SmartyStreetsAdaptor
 # from requests_futures.sessions import FuturesSession
@@ -17,11 +18,26 @@ CORS(app)
 #     pass
 
 
+@app.before_request
+def before_request():
+    email = json.loads(request.data)["email"]
+    log_in = customer_api.get_login_info(email)
+    if not log_in:
+        return Response(json.dumps({"message": "User not log in"}), status=404, content_type="application/json")
+
+
 @app.route("/", methods=["GET"])
 def index():
     old_stock = catalog_api.get_stock(item_id=1)
     return {"old_stock": old_stock}
 
+
+@app.route("/order", methods=["POST"])
+def post_order():
+    data = json.loads(request.data)
+    url = ORDER_ENDPOINT + url_for("post_order")
+    r = requests.post(url=url, json=data)
+    return Response(json.dumps(r.json()), status=r.status_code, content_type="application/json")
 
 @app.route("/order/<int:orderid>/orderline", methods=["POST"])
 def post_orderline(orderid):

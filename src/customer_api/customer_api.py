@@ -3,7 +3,12 @@ import requests
 
 endpoint = "http://127.0.0.1:5012/customers"
 
-
+def get_login_info(email):
+    customer_url = f"{endpoint}/validate_login/{email}"
+    rsp = requests.get(url=customer_url).json()
+    res = rsp["has_login"]
+    print(res)
+    return res
 # def get_stock(item_id):
 #     # return stock of an item
 #     stock_url = f"{endpoint}/{item_id}"
